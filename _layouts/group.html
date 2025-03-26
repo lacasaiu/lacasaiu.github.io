@@ -1,0 +1,61 @@
+---
+layout: page
+format: group
+---
+
+<!--START /_layouts/group.html-->
+<!--Set up featured item arrays-->
+{% assign FeaturedItems = "" | split: ',' %}
+
+<!--Get unique group tags-->
+{% assign grouplist = site.items | map: "group" | uniq %}
+<!-- FOR DEV TEAM
+Still need to sort so "misc items" isn't the first thing.
+Pop first array value (blank) off of array
+Push blank array value to 
+-->
+
+<!--Line 22/35: Loop through unique group tags-->
+<!--Line 23/34: Get the list of possible Featured Items-->
+<!--Line 24-27: If there are no Featured Items, add the title of the first item, alphanumeric, to the featured item list-->
+<!--Line 28-33: If there is a Featured Item, add its title to the featured item list-->
+{% for groupname in grouplist %}
+	{% assign GroupFeaturePossibilities = site.items | where:'featureditem', groupname %}
+	{% if GroupFeaturePossibilities.size < 1 %}
+		{% assign GroupFeatureItem = site.items | where:'group', groupname %}
+		{% if FeaturedItems contains GroupFeatureItem[0].title %}{% else %}{% assign FeaturedItems = FeaturedItems | push: GroupFeatureItem[0].title %}
+		{% endif %}
+	{% else %}
+		{% assign GroupFeatureItem = GroupFeaturePossibilities | first %}
+		{% for item in GroupFeatureItem %}
+			{% if FeaturedItems contains GroupFeatureItem.title %}{% else %}{% assign FeaturedItems = FeaturedItems | push: GroupFeatureItem.title %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+{% endfor %}
+
+	<div class="large-12 cell">
+		<!--main content start-->
+
+		{{ content }}
+
+		<!--main content end-->
+	</div>
+</div>
+<div class="grid-container">
+	<div class="grid-x grid-padding-x grid-margin-x">
+
+<!--include _includes/itembox.html for each item in the groupname set-->
+<!--Set up groupname and featured-item arrays-->
+{% for itemtitle in FeaturedItems %}
+{% assign CurrentItem = site.items | where:'title', itemtitle %}
+{% assign item = CurrentItem[0] %}
+
+{% if item.group %}{% assign groupname = item.group %}{% assign groupselect = item.group %}{%else%}{% assign groupname = site.blankgroup %}{% assign groupselect = "blankgroup" %}{% endif %}
+{% include _itembox.html %}
+{% endfor %}
+<!--itembox end-->
+
+		</div>
+	</div>
+</div>

@@ -1,0 +1,21 @@
+# Site navigation links
+
+- title: Home/La Casa
+  url: /
+  excerpt:
+  image:
+
+- title: Community/Comunidad
+  url: /collection
+  excerpt:
+  image:
+
+- title: Anniversary/Aniversario
+  url: /anniversary
+  excerpt:
+  image:
+
+- title: 3D Walkthrough
+  url: /matterport
+  excerpt:
+  image:

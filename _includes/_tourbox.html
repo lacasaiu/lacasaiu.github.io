@@ -1,0 +1,56 @@
+{% capture FileName %}{{ tour.url | split: '/' | last }}{% endcapture %}
+{% capture TourID %}{{ FileName | split: '.' | first }}{% endcapture %}
+
+{% assign catlist = "" | split: ',' %}
+{% if tour.categories %}
+{% for cat in tour.categories %}
+{% assign catdash = cat | replace: " ", "-" %}
+{% assign catlist = catlist | push: catdash %}
+{% endfor %}
+{% assign uniqueCategories = catlist | uniq %}
+{%endif%}
+
+{% assign formlist = "" | split: ',' %}
+{% if tour.format %}
+{% for format in tour.format %}
+{% assign formdash = form | replace: " ", "-" %}
+{% assign formlist = formlist | push: formdash %}
+{% endfor %}
+{% assign uniqueFormats = formlist | uniq %}
+{%endif%}
+
+{% assign CurrentPhotoResult = TourPhotoResult %}
+{% if tour.tourphoto %}
+{% assign TourPhotoResult = tour.photo %}
+{% else %}
+{% capture TourImagePath %}{{ urltourimg }}{{ TourID }}{% endcapture %}
+{% for static_file in site.static_files %}
+{% if static_file.path contains TourImagePath %}
+{% unless static_file.path contains ".md" %}
+{% capture TourPhotoResult %}{{site.baseurl}}{{static_file.path}}{% endcapture %}
+{% endunless %}
+{% break %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if CurrentPhotoResult == TourPhotoResult %}
+{% capture TourPhotoResult %}{{site.baseurl}}{{ site.urlimg }}{{site.placeholderimg}}{% endcapture %}
+{% endif %}
+
+	<div role="link" aria-label="{{ tour.title }} thumbnail" data-categories="{{ tour.categories | join: ',' }}" data-formats="{{ tour.format | join: ',' }}" class="cell filter-item small-12 medium-6 large-4 card filter-simple-item {% if tour.group%}{{tour.group}} {% endif %}{% if uniquetags%}{{ uniquetags | join: " " }}{% endif %}">
+	{% if TourPhotoResult != empty %}
+	<div class="card-thumbnail">
+		<a href="{{ site.baseurl }}{{ tour.url }}" role="link" aria-label="{{ tour.title }}">
+		<img class="square thumbnail" src="{{ TourPhotoResult }}" alt="{{ page.shortdesc }}"></a>
+	</div>
+	{% endif %}
+  <h3 class="card-title accentbg"><a href="{{ site.baseurl }}{{ tour.url }}">{{ tour.title }}</a></h3>
+  {%if tour.contributor %}<h4 class="card-contributor">{{ tour.contributor }}</h4>{% endif %}
+  <p class="card-desc">{{ tour.shortdesc | strip_html | truncatewords:30 }} (<a href="{{ site.baseurl }}{{ tour.url }}">read more...</a>)</p>
+</div>
+
+<style>
+	.card-desc{
+		text-align: left;
+	}
+</style>

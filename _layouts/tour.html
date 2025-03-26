@@ -1,0 +1,79 @@
+---
+layout: page
+format: tour
+---
+{% capture FileName %}{{ page.url | split: '/' | last }}{% endcapture %}
+{% capture ItemID %}{{ FileName | split: '.' | first }}{% endcapture %}
+
+<div class="grid-container">
+	<div class="grid-x grid-padding-x">
+<div class="cell medium-6 large-8">
+
+{% if page.contributor.size > 0 %}<h2>Object contributed by {{ page.contributor }}</h2>{% endif %}
+
+{% if page.contributorquote.size > 0  %}<q class="item-quote">"{{ page.contributorquote }}"</q>{% endif %}
+
+{% if page.creator.size > 0  %}<h4>Originally created by {{ page.creator }}</h4>{% endif %}
+
+{% if page.externalurl.size > 0  %}<p>Find out more at {{ page.externalurl }}{% endif %}
+
+{% if page.teammember.size > 0  %}<p>Assistance collecting this object by {{ page.teammember }}</p>{% endif %}
+
+</div>
+</div>
+</div>
+<div class="grid-container">
+	<div class="grid-x grid-padding-x">
+		<div class="large-12 cell">
+			<!--page-->
+{{ content }}
+
+
+
+{% capture ItemImagePath %}{{ urlitemimg }}{{ ItemID }}{% endcapture %}
+{% for static_file in site.static_files %}
+{% if static_file.path contains ItemImagePath %}
+{% unless static_file.path contains 'transcript' %}
+{% capture ItemPhotoResult %}{{site.baseurl}}{{static_file.path}}{% endcapture %}
+<img class="featured-image img-fluid object-photo" src="{{ ItemPhotoResult }}" alt="{{ page.title }}">
+{% endunless %}
+{% endif %}
+{% endfor %}
+
+{% capture ItemTranscriptMD %}{{ ItemID }}.md{% endcapture %}
+{% for static_file in site.static_files %}
+	{% if static_file.path contains ItemTranscriptMD %}
+		include {{site.baseurl}}{{static_file.path}}
+	{% endif %}
+{% endfor %}
+
+{% assign dc-base = "dublin-core-" %}
+<div class="element-set">
+<h2 id="Dublin Core">More about this item</h2>
+<p class="quiet">Dublin Core</p>
+<table class="stack">
+	{% for var in page %}
+	{% if page[var] != "" and page[var] %}
+		{% for key in site.data.metadata.fields %}
+			{% if key[0] == var and key[1] %}
+				{% capture dc-type %} {{ dc-base }}{{ key[0] }} {% endcapture %}
+				{% if page[var].first %}
+					{% assign varvalue = page[var] | uniq | join: ", " %}
+				{% else %}
+					{% assign varvalue = page[var] %}
+				{% endif %}
+				<tr>
+					<td><div id="{{ dc-type }}" class="element">{{ key[1] }}</div></td>
+					<td><div class="element-text">{{ varvalue }}</div></td>
+				</tr>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+{% endfor %}		
+</table>
+
+<!-- {: .my-class } -->  
+
+		</div>
+	</div>
+</div>
